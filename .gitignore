@@ -160,5 +160,7 @@ cython_debug/
 .idea/
 
 
-/homework-2/w_0.py
-/homework-2/w_2.py
+/data/
+
+/homework-2/w_201.py
+/homework-2/w_202.py

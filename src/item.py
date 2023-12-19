@@ -28,10 +28,10 @@ class Item:
         return self.__name
 
     @name.setter
-    def name(self, name: str):
-        self.__name = name[0:10]
+    def name(self, name2: str):
+        self.__name = name2[0:10]
 
-    def calculate_total_price(self) -> float:
+    def calculate_total_price(self) -> float | int:
         """
         Рассчитывает общую стоимость конкретного товара в магазине.
         :return: Общая стоимость товара.
@@ -60,4 +60,4 @@ class Item:
         try:
             return int(float(string))
         except ValueError:
-            print("Введено некорректное число")
+            print("Введены некорректные данные")
