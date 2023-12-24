@@ -16,8 +16,12 @@ def test__item_init(item_fixture):
     assert item_fixture.quantity == 2
 
 
+def test__item_str(item_fixture):
+    assert str(item_fixture) == 'test_2'
+
+
 def test__item_repr(item_fixture):
-    assert repr(item_fixture) == "Item (test_2, 12.4, 2)"
+    assert repr(item_fixture) == "Item('test_2', 12.4, 2)"
 
 
 def test__name(item_fixture):
@@ -54,5 +58,4 @@ def test__string_to_number():
     assert Item.string_to_number(5) == 5
     assert Item.string_to_number("5") == 5
     assert Item.string_to_number("5.0") == 5
-
     assert Item.string_to_number("a") == None
