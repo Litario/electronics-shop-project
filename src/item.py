@@ -26,6 +26,12 @@ class Item:
     def __repr__(self):
         return f"{self.__class__.__name__}{tuple(self.__dict__.values())}"
 
+    def __add__(self, other):
+        if isinstance(other, Item):
+            return self.quantity + other.quantity
+        else:
+            raise Exception("Складывать нужно ЭК класса.")
+
     @property
     def name(self):
         return self.__name
