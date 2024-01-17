@@ -1,4 +1,9 @@
 import csv
+import os
+import pathlib
+from pathlib import Path
+
+from src.errors import InstantiateCSVError
 
 
 class Item:
@@ -18,7 +23,8 @@ class Item:
         self.__name = name
         self.price = price
         self.quantity = quantity
-        Item.all.append(self)
+
+        self.__class__.all.append(self)
 
     def __str__(self):
         return self.name
@@ -54,15 +60,34 @@ class Item:
         self.price *= self.pay_rate
 
     @classmethod
-    def instantiate_from_csv(cls, adrs):
+    def instantiate_from_csv(cls, csv_file_path='src/items.csv'):
         """
         Метод, инициализирующий экземпляры класса данными из файла типа .csv
         """
-        cls.all.clear()
-        with open(adrs, encoding='windows-1251') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
-            for dct in csv_reader:
-                Item(*dct.values())
+        BASE_DIR: Path = pathlib.Path(__file__).resolve().parent.parent
+        CSV_FILE_DIR: Path = BASE_DIR.joinpath(csv_file_path)
+
+        if not os.path.exists(CSV_FILE_DIR):
+            raise FileNotFoundError("Отсутствует файл item.csv")
+        else:
+            cls.all.clear()
+            with open(CSV_FILE_DIR, encoding='windows-1251') as csv_file:
+                csv_reader = csv.DictReader(csv_file)
+                lst = list(csv_reader)  ## без листа указатель чтения в объекте DictReader останется в конце файла
+
+                ## условие наличия правильного количества столбцов в файле
+                attr_number = len(cls.__init__.__code__.co_varnames) - 1
+                csv_file.seek(0)
+                if len(csv_file.readline()) == attr_number:
+                    ## условие наличия всех значений в файле
+                    if all(map(lambda d: all(d.values()), lst)):
+                    # if all([all(i.values()) for i in lst]):  ## вариант условия через списочное выражение
+                        for dct in lst:
+                            cls(*dct.values())
+                    else:
+                        raise InstantiateCSVError()
+                else:
+                    raise InstantiateCSVError()
 
     @staticmethod
     def string_to_number(string):

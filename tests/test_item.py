@@ -1,9 +1,11 @@
 import pytest
 
+from src.errors import InstantiateCSVError
 from src.item import Item
 from src.phone import Phone
 
 
+## ________________________________________________________ fixtures
 @pytest.fixture
 def item_fixture():
     return [
@@ -24,10 +26,21 @@ def phone_fixture():
 
 # obj = Item("test_1", 12.4, 2)
 
+
+## ____________________________________________________________ tests
 def test__item_init(item_fixture):
     assert item_fixture[0].name == "test_2"
     assert item_fixture[0].price == 12.4
     assert item_fixture[0].quantity == 2
+
+
+def test__item_all(item_fixture):
+    start_len = len(Item.all)
+    n = 10
+    for i in range(n):
+        Item(f"obj_{i}", i / 1, i)
+
+    assert len(Item.all) == n + start_len
 
 
 def test__item_str(item_fixture):
@@ -70,13 +83,15 @@ def test__apply_discount_2(item_fixture):
     assert item_fixture[0].price == 37.2
 
 
-def test__item_all(item_fixture):
-    start_len = len(Item.all)
-    n = 10
-    for i in range(n):
-        Item(f"obj_{i}", i / 1, i)
+def test__instantiate_from_csv(item_fixture):
+    with pytest.raises(FileNotFoundError, match=r"Отсутствует файл item.csv"):
+        item_fixture[0].__class__.instantiate_from_csv('src/items_absent.csv')
 
-    assert len(Item.all) == n + start_len
+    with pytest.raises(InstantiateCSVError, match=r"Файл item.csv поврежден"):
+        item_fixture[0].__class__.instantiate_from_csv('src/items_for_test1.csv')
+
+    with pytest.raises(InstantiateCSVError, match=r"Файл item.csv поврежден"):
+        item_fixture[0].__class__.instantiate_from_csv('src/items_for_test2.csv')
 
 
 def test__string_to_number():
